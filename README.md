@@ -49,12 +49,32 @@ php artisan vendor:publish --tag="filament-puck-config"
 
 ## Usage
 
-Add the field to any Filament form schema:
+### Slide-over page builder (recommended)
+
+Use the section helper for a centered **Open page builder** button and a full-screen slide-over editor:
+
+```php
+use Wight\FilamentPuck\Forms\Components\PuckSection;
+
+PuckSection::make('body')->columnSpan(2);
+```
+
+Or configure the field directly:
 
 ```php
 use Wight\FilamentPuck\Forms\Components\PuckEditor;
 
 PuckEditor::make('body')
+    ->slideOver()
+    ->hiddenLabel()
+    ->columnSpanFull();
+```
+
+### Inline editor
+
+```php
+PuckEditor::make('body')
+    ->inline()
     ->columnSpanFull();
 ```
 
