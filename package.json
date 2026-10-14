@@ -1,0 +1,22 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "node bin/build.js --dev",
+        "build": "node bin/build.js"
+    },
+    "devDependencies": {
+        "buffer": "^6.0.3",
+        "crypto-browserify": "^3.12.1",
+        "esbuild": "^0.28.0",
+        "events": "^3.3.0",
+        "prettier": "^3.5.3",
+        "stream-browserify": "^3.0.0",
+        "util": "^0.12.5"
+    },
+    "dependencies": {
+        "@puckeditor/core": "^0.23.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1"
+    }
+}

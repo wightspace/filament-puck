@@ -1,0 +1,82 @@
+{
+    "name": "wight/filament-puck",
+    "description": "Filament form field integrating Puck visual editor",
+    "keywords": [
+        "wight",
+        "laravel",
+        "filamentphp",
+        "filament",
+        "filament-plugin",
+        "filament-puck"
+    ],
+    "homepage": "https://github.com/wight/filament-puck",
+    "support": {
+        "issues": "https://github.com/wight/filament-puck/issues",
+        "source": "https://github.com/wight/filament-puck"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "John Wight",
+            "email": "jwight@wight-space.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/forms": "^5.0",
+        "spatie/laravel-package-tools": "^1.15.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^3.7|^4.0",
+        "pestphp/pest-plugin-arch": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0",
+        "pestphp/pest-plugin-livewire": "^3.0|^4.0",
+        "rector/rector": "^2.0",
+        "spatie/laravel-ray": "^1.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wight\\FilamentPuck\\": "src/",
+            "Wight\\FilamentPuck\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Wight\\FilamentPuck\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "analyse": "phpstan analyse",
+        "lint": "pint",
+        "refactor": "rector",
+        "test": "pest",
+        "test:lint": "pint --test",
+        "test:refactor": "rector --dry-run"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Wight\\FilamentPuck\\FilamentPuckServiceProvider"
+            ],
+            "aliases": {
+                "FilamentPuck": "Wight\\FilamentPuck\\Facades\\FilamentPuck"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
