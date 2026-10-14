@@ -1,3 +1,5 @@
+import '../shims/node-globals.js'
+
 import { createRoot } from 'react-dom/client'
 import { Puck } from '@puckeditor/core'
 
