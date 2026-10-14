@@ -18,6 +18,10 @@ async function compile(options) {
 const defaultOptions = {
     define: {
         'process.env.NODE_ENV': isDev ? `'development'` : `'production'`,
+        global: 'globalThis',
+    },
+    banner: {
+        js: 'var global = globalThis;',
     },
     bundle: true,
     mainFields: ['module', 'main'],
