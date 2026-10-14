@@ -42,8 +42,9 @@
 
             <x-filament::button
                 type="button"
+                size="sm"
                 :disabled="$isDisabled"
-                icon="heroicon-o-paint-brush"
+                class="fi-ac-btn-action fi-btn fi-size-sm"
                 x-on:click="openBuilder()"
             >
                 {{ $openButtonLabel }}
