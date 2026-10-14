@@ -1,3 +1,9 @@
+const headingLevelStyles = {
+    1: { fontSize: '2.25rem', lineHeight: '2.5rem', letterSpacing: '-0.025em' },
+    2: { fontSize: '1.875rem', lineHeight: '2.25rem', letterSpacing: '-0.025em' },
+    3: { fontSize: '1.5rem', lineHeight: '2rem', letterSpacing: '0' },
+}
+
 /** @type {import('@puckeditor/core').Config} */
 export const defaultPuckConfig = {
     components: {
@@ -14,15 +20,37 @@ export const defaultPuckConfig = {
                         { label: 'H3', value: '3' },
                     ],
                 },
+                align: {
+                    type: 'radio',
+                    options: [
+                        { label: 'Left', value: 'left' },
+                        { label: 'Center', value: 'center' },
+                        { label: 'Right', value: 'right' },
+                    ],
+                },
             },
             defaultProps: {
                 text: 'Heading',
                 level: '1',
+                align: 'left',
             },
-            render: ({ text, level }) => {
+            render: ({ text, level, align }) => {
                 const Tag = `h${level}`
 
-                return <Tag>{text}</Tag>
+                return (
+                    <Tag
+                        style={{
+                            ...(headingLevelStyles[level] ?? headingLevelStyles[1]),
+                            margin: 0,
+                            padding: '1rem 1.5rem',
+                            fontWeight: 700,
+                            color: '#0f172a',
+                            textAlign: align ?? 'left',
+                        }}
+                    >
+                        {text}
+                    </Tag>
+                )
             },
         },
         Text: {

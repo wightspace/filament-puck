@@ -186,9 +186,13 @@ export default function puckEditorFormComponent({
 
                             puckData = nextData
                             isDirty = true
-                            this.blockCount = Array.isArray(nextData?.content)
+                            const nextBlockCount = Array.isArray(nextData?.content)
                                 ? nextData.content.length
                                 : 0
+
+                            if (nextBlockCount !== this.blockCount) {
+                                this.blockCount = nextBlockCount
+                            }
 
                             if (displayMode === 'inline') {
                                 this.syncToLivewire()
