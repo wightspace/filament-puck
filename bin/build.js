@@ -35,7 +35,7 @@ const defaultOptions = {
     },
     bundle: true,
     format: 'esm',
-    mainFields: ['module', 'main'],
+    mainFields: ['browser', 'module', 'main'],
     platform: 'browser',
     sourcemap: isDev ? 'inline' : false,
     sourcesContent: isDev,
@@ -48,7 +48,6 @@ const defaultOptions = {
         '.css': 'empty',
     },
     alias: {
-        crypto: 'crypto-browserify',
         buffer: 'buffer',
         stream: 'stream-browserify',
         events: 'events',
