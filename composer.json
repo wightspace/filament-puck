@@ -1,18 +1,18 @@
 {
-    "name": "wight/filament-puck",
+    "name": "wightspace/filament-puck",
     "description": "Filament form field integrating Puck visual editor",
     "keywords": [
-        "wight",
+        "wightspace",
         "laravel",
         "filamentphp",
         "filament",
         "filament-plugin",
         "filament-puck"
     ],
-    "homepage": "https://github.com/wight/filament-puck",
+    "homepage": "https://github.com/wightspace/filament-puck",
     "support": {
-        "issues": "https://github.com/wight/filament-puck/issues",
-        "source": "https://github.com/wight/filament-puck"
+        "issues": "https://github.com/wightspace/filament-puck/issues",
+        "source": "https://github.com/wightspace/filament-puck"
     },
     "license": "MIT",
     "authors": [

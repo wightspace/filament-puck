@@ -12,8 +12,27 @@ Built on the [Filament plugin skeleton](https://filamentphp.com/docs/5.x/plugins
 
 ## Installation
 
+From [GitHub](https://github.com/wightspace/filament-puck) (before Packagist), add a VCS repository in your Laravel app’s `composer.json`:
+
+```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/wightspace/filament-puck"
+    }
+]
+```
+
+Then install:
+
 ```bash
-composer require wight/filament-puck
+composer require wightspace/filament-puck:dev-main
+```
+
+When the package is on Packagist:
+
+```bash
+composer require wightspace/filament-puck
 ```
 
 Register Filament assets after installing or upgrading:

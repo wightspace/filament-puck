@@ -35,10 +35,10 @@ class PuckEditor extends Field implements HasEmbeddedView
             id="<?= e($id) ?>"
             role="group"
             x-load
-            x-load-src="<?= e(FilamentAsset::getAlpineComponentSrc('puck-editor', 'wight/filament-puck')) ?>"
+            x-load-src="<?= e(FilamentAsset::getAlpineComponentSrc('puck-editor', 'wightspace/filament-puck')) ?>"
             x-data="puckEditorFormComponent({
                         isDisabled: <?= Js::from($isDisabled)->toHtml() ?>,
-                        stylesheetHref: <?= Js::from(FilamentAsset::getStyleHref('puck-editor', 'wight/filament-puck'))->toHtml() ?>,
+                        stylesheetHref: <?= Js::from(FilamentAsset::getStyleHref('puck-editor', 'wightspace/filament-puck'))->toHtml() ?>,
                         state: $wire.<?= $this->applyStateBindingModifiers("\$entangle('{$statePath}')", isOptimisticallyLive: false) ?>,
                     })"
             wire:ignore

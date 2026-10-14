@@ -32,7 +32,7 @@ class FilamentPuckServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
-                    ->askToStarRepoOnGitHub('wight/filament-puck');
+                    ->askToStarRepoOnGitHub('wightspace/filament-puck');
             });
 
         $configFileName = $package->shortName();
@@ -74,7 +74,7 @@ class FilamentPuckServiceProvider extends PackageServiceProvider
 
     protected function getAssetPackageName(): ?string
     {
-        return 'wight/filament-puck';
+        return 'wightspace/filament-puck';
     }
 
     /**
