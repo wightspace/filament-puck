@@ -5,20 +5,30 @@ import { Puck } from '@puckeditor/core'
 
 import { defaultPuckConfig } from '../puck/default-config.jsx'
 
-const emptyPuckData = {
-    root: { props: {} },
-    content: [],
+function toPlainObject(value) {
+    const raw = window.Alpine?.raw ? window.Alpine.raw(value) : value
+
+    if (raw === undefined || raw === null) {
+        return raw
+    }
+
+    return JSON.parse(JSON.stringify(raw))
 }
 
 function normalizePuckData(value) {
-    if (!value || typeof value !== 'object') {
-        return structuredClone(emptyPuckData)
+    const data = toPlainObject(value)
+
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        return { root: { props: {} }, content: [] }
     }
 
     return {
-        root: value.root ?? { props: {} },
-        content: Array.isArray(value.content) ? value.content : [],
-        ...(value.zones ? { zones: value.zones } : {}),
+        root:
+            data.root && typeof data.root === 'object' && !Array.isArray(data.root)
+                ? data.root
+                : { props: {} },
+        content: Array.isArray(data.content) ? data.content : [],
+        ...(data.zones && !Array.isArray(data.zones) ? { zones: data.zones } : {}),
     }
 }
 
@@ -31,24 +41,16 @@ export default function puckEditorFormComponent({
     stylesheetHref,
     state,
 }) {
+    // React roots and Puck documents must stay outside Alpine's reactive proxies.
+    let reactRoot = null
+    let puckData = null
+    let isDirty = false
+
     return {
-        reactRoot: null,
-        editorMounted: false,
-        isSchedulingMount: false,
         /** Livewire entangled form state (synced on Done / close). */
         state,
-        /** Local Puck document — avoids entangle feedback loops while editing. */
-        puckData: null,
 
-        get blockCount() {
-            const source =
-                this.puckData ??
-                (this.state && Object.keys(this.state).length > 0
-                    ? this.state
-                    : emptyPuckData)
-
-            return Array.isArray(source.content) ? source.content.length : 0
-        },
+        blockCount: 0,
 
         get summaryText() {
             if (this.blockCount === 0) {
@@ -61,44 +63,49 @@ export default function puckEditorFormComponent({
         },
 
         init() {
-            this.puckData = normalizePuckData(this.state)
+            this.loadFromState()
             this.ensureStylesheet()
 
             if (displayMode === 'inline') {
                 this.scheduleMount()
+
+                return
             }
 
-            if (displayMode === 'slideOver' && modalId) {
-                window.addEventListener('open-modal', (event) => {
-                    if (event.detail?.id !== modalId) {
-                        return
-                    }
-
-                    window.setTimeout(() => this.scheduleMount(), 100)
-                })
-
-                window.addEventListener('close-modal', (event) => {
-                    if (event.detail?.id !== modalId) {
-                        return
-                    }
-
-                    this.syncToLivewire()
-                })
-
-                window.addEventListener('puck-editor-done', (event) => {
-                    if (event.detail?.id !== modalId) {
-                        return
-                    }
-
-                    this.finishEditing()
-                })
+            if (!modalId) {
+                return
             }
+
+            window.addEventListener('open-modal', (event) => {
+                if (event.detail?.id !== modalId) {
+                    return
+                }
+
+                this.loadFromState()
+                window.setTimeout(() => this.scheduleMount(), 50)
+            })
+
+            window.addEventListener('close-modal', (event) => {
+                if (event.detail?.id !== modalId) {
+                    return
+                }
+
+                this.syncToLivewire()
+            })
         },
 
         destroy() {
-            this.reactRoot?.unmount()
-            this.reactRoot = null
-            this.editorMounted = false
+            reactRoot?.unmount()
+            reactRoot = null
+        },
+
+        loadFromState() {
+            if (isDirty) {
+                return
+            }
+
+            puckData = normalizePuckData(this.state)
+            this.blockCount = puckData.content.length
         },
 
         openBuilder() {
@@ -106,27 +113,24 @@ export default function puckEditorFormComponent({
                 return
             }
 
-            this.puckData = normalizePuckData(this.state)
-            this.$dispatch('open-modal', { id: modalId })
-
-            if (this.editorMounted) {
-                this.renderPuck()
-            } else {
-                window.setTimeout(() => this.scheduleMount(), 100)
-            }
+            window.dispatchEvent(
+                new CustomEvent('open-modal', { detail: { id: modalId } }),
+            )
         },
 
         finishEditing() {
-            this.syncToLivewire()
-            this.$dispatch('close-modal', { id: modalId })
+            window.dispatchEvent(
+                new CustomEvent('close-modal', { detail: { id: modalId } }),
+            )
         },
 
         syncToLivewire() {
-            if (isDisabled) {
+            if (isDisabled || !isDirty) {
                 return
             }
 
-            this.state = structuredClone(this.puckData)
+            this.state = normalizePuckData(puckData)
+            isDirty = false
         },
 
         ensureStylesheet() {
@@ -145,14 +149,17 @@ export default function puckEditorFormComponent({
         },
 
         scheduleMount(attempt = 0) {
-            if (this.editorMounted) {
+            if (reactRoot) {
                 return
             }
 
-            const mountElement = this.getMountElement()
+            const mountElement = mountElementId
+                ? document.getElementById(mountElementId)
+                : (this.$refs.puck ?? null)
 
             if (mountElement) {
-                this.mountEditor(mountElement)
+                reactRoot = createRoot(mountElement)
+                this.renderPuck()
 
                 return
             }
@@ -162,45 +169,30 @@ export default function puckEditorFormComponent({
             }
         },
 
-        getMountElement() {
-            if (mountElementId) {
-                return document.getElementById(mountElementId)
-            }
-
-            return this.$refs.puck ?? null
-        },
-
-        mountEditor(mountElement) {
-            const el = mountElement ?? this.getMountElement()
-
-            if (!el || this.editorMounted) {
-                return
-            }
-
-            this.reactRoot = createRoot(el)
-            this.editorMounted = true
-            this.renderPuck()
-        },
-
         renderPuck() {
-            if (!this.reactRoot) {
+            if (!reactRoot) {
                 return
             }
 
-            const puckConfig = config ?? defaultPuckConfig
-            const data = normalizePuckData(this.puckData)
-
-            this.reactRoot.render(
+            reactRoot.render(
                 <div className="fi-puck-editor">
                     <Puck
-                        config={puckConfig}
-                        data={data}
+                        config={config ?? defaultPuckConfig}
+                        data={puckData}
                         onChange={(nextData) => {
                             if (isDisabled) {
                                 return
                             }
 
-                            this.puckData = normalizePuckData(nextData)
+                            puckData = nextData
+                            isDirty = true
+                            this.blockCount = Array.isArray(nextData?.content)
+                                ? nextData.content.length
+                                : 0
+
+                            if (displayMode === 'inline') {
+                                this.syncToLivewire()
+                            }
                         }}
                         permissions={
                             isDisabled

@@ -12,7 +12,7 @@
     $openButtonLabel = $field->getOpenButtonLabel();
     $modalHeading = $field->getModalHeading();
     $modalDescription = $field->getModalDescription();
-    $doneModalAlpineClickHandler = 'window.dispatchEvent(new CustomEvent(' . Js::from('puck-editor-done') . ', { detail: { id: ' . Js::from($modalId) . ' } }))';
+    $closeModalAlpineClickHandler = '$dispatch(' . Js::from('close-modal') . ', { id: ' . Js::from($modalId) . ' })';
 @endphp
 
 <div
@@ -34,23 +34,21 @@
     {{ $field->getExtraAttributeBag()->class(['fi-fo-puck-editor']) }}
 >
     @if ($isSlideOver)
-        <div
-            class="fi-puck-editor-launcher flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-gray-300 px-6 py-16 dark:border-gray-600"
-        >
-            <div class="text-center">
-                <p class="text-sm font-medium text-gray-950 dark:text-white">
+        <div class="fi-puck-editor-launcher">
+            <div>
+                <p class="fi-puck-editor-launcher-title">
                     {{ __('filament-puck::puck.launcher.title') }}
                 </p>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-text="summaryText"></p>
+                <p class="fi-puck-editor-launcher-summary" x-text="summaryText"></p>
             </div>
 
             <x-filament::button
                 type="button"
-                color="primary"
-                size="md"
-                icon="heroicon-o-rectangle-group"
+                color="gray"
+                size="sm"
                 :disabled="$isDisabled"
                 x-on:click="openBuilder()"
+                class="fi-ac-btn-action"
             >
                 {{ $openButtonLabel }}
             </x-filament::button>
@@ -69,7 +67,7 @@
         >
             <div
                 id="{{ $puckMountElementId }}"
-                class="fi-puck-editor-canvas min-h-[calc(100vh-12rem)] w-full"
+                class="fi-puck-editor-canvas fi-puck-editor-canvas-slide-over"
             ></div>
 
             <x-slot name="footer">
@@ -78,7 +76,7 @@
                         type="button"
                         color="gray"
                         size="sm"
-                        x-on:click="{!! $doneModalAlpineClickHandler !!}"
+                        x-on:click="{!! $closeModalAlpineClickHandler !!}"
                     >
                         {{ __('filament-puck::puck.actions.done') }}
                     </x-filament::button>
@@ -86,6 +84,6 @@
             </x-slot>
         </x-filament::modal>
     @else
-        <div id="{{ $puckMountElementId }}" class="min-h-[32rem] w-full"></div>
+        <div id="{{ $puckMountElementId }}" class="fi-puck-editor-canvas fi-puck-editor-canvas-inline"></div>
     @endif
 </div>

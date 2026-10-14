@@ -1,0 +1,55 @@
+.fi-puck-editor-launcher {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--gray-300, #d4d4d8);
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.dark .fi-puck-editor-launcher {
+    border-color: var(--gray-600, #52525b);
+}
+
+.fi-puck-editor-launcher-title {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: var(--gray-950, #09090b);
+}
+
+.dark .fi-puck-editor-launcher-title {
+    color: #fff;
+}
+
+.fi-puck-editor-launcher-summary {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--gray-500, #71717a);
+}
+
+.dark .fi-puck-editor-launcher-summary {
+    color: var(--gray-400, #a1a1aa);
+}
+
+.fi-puck-editor-canvas {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.fi-puck-editor-canvas-slide-over {
+    height: calc(100dvh - 11rem);
+}
+
+.fi-puck-editor-canvas-inline {
+    height: 48rem;
+}
+
+.fi-puck-editor-canvas > .fi-puck-editor {
+    height: 100%;
+}

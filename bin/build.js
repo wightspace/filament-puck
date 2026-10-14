@@ -1,5 +1,5 @@
 import esbuild from 'esbuild'
-import { copyFileSync, mkdirSync } from 'fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { createRequire } from 'module'
 import { dirname } from 'path'
 
@@ -85,9 +85,12 @@ const defaultOptions = {
 
 mkdirSync('./resources/dist/components', { recursive: true })
 
-copyFileSync(
-    './node_modules/@puckeditor/core/dist/index.css',
+writeFileSync(
     './resources/dist/puck-editor.css',
+    [
+        readFileSync('./node_modules/@puckeditor/core/dist/index.css', 'utf8'),
+        readFileSync('./resources/css/puck-editor.css', 'utf8'),
+    ].join('\n'),
 )
 
 await compile({
