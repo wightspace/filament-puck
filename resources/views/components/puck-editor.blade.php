@@ -12,6 +12,7 @@
     $openButtonLabel = $field->getOpenButtonLabel();
     $modalHeading = $field->getModalHeading();
     $modalDescription = $field->getModalDescription();
+    $closeModalAlpineClickHandler = '$dispatch(' . Js::from('close-modal') . ', { id: ' . Js::from($modalId) . ' })';
 @endphp
 
 <div
@@ -44,9 +45,10 @@
 
             <x-filament::button
                 type="button"
-                size="sm"
+                color="primary"
+                size="md"
+                icon="heroicon-o-rectangle-group"
                 :disabled="$isDisabled"
-                class="fi-ac-btn-action fi-btn fi-size-sm"
                 x-on:click="openBuilder()"
             >
                 {{ $openButtonLabel }}
@@ -73,7 +75,9 @@
                 <div class="flex w-full justify-end gap-3">
                     <x-filament::button
                         type="button"
-                        x-on:click="$dispatch(@js('close-modal'), { id: @js($modalId) })"
+                        color="gray"
+                        size="sm"
+                        x-on:click="{!! $closeModalAlpineClickHandler !!}"
                     >
                         {{ __('filament-puck::puck.actions.done') }}
                     </x-filament::button>

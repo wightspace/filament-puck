@@ -21,7 +21,9 @@ export default function puckEditorFormComponent({
 }) {
     return {
         reactRoot: null,
+        mountElement: null,
         editorMounted: false,
+        isSchedulingMount: false,
         state,
 
         get blockCount() {
@@ -51,13 +53,18 @@ export default function puckEditorFormComponent({
                         return
                     }
 
-                    this.scheduleMount()
+                    if (!this.editorMounted) {
+                        this.scheduleMount()
+                    }
                 })
             }
         },
 
         destroy() {
             this.reactRoot?.unmount()
+            this.reactRoot = null
+            this.mountElement = null
+            this.editorMounted = false
         },
 
         openBuilder() {
@@ -66,7 +73,10 @@ export default function puckEditorFormComponent({
             }
 
             this.$dispatch('open-modal', { id: modalId })
-            this.scheduleMount()
+
+            if (!this.editorMounted) {
+                this.scheduleMount()
+            }
         },
 
         closeBuilder() {
@@ -93,9 +103,18 @@ export default function puckEditorFormComponent({
         },
 
         scheduleMount(attempt = 0) {
+            if (this.editorMounted) {
+                return
+            }
+
+            if (attempt === 0) {
+                this.isSchedulingMount = true
+            }
+
             const mountElement = this.getMountElement()
 
             if (mountElement) {
+                this.isSchedulingMount = false
                 this.mountEditor(mountElement)
 
                 return
@@ -103,7 +122,11 @@ export default function puckEditorFormComponent({
 
             if (attempt < 30) {
                 requestAnimationFrame(() => this.scheduleMount(attempt + 1))
+
+                return
             }
+
+            this.isSchedulingMount = false
         },
 
         getMountElement() {
@@ -117,15 +140,13 @@ export default function puckEditorFormComponent({
         mountEditor(mountElement) {
             const el = mountElement ?? this.getMountElement()
 
-            if (!el) {
+            if (!el || this.editorMounted) {
                 return
             }
 
-            if (!this.reactRoot) {
-                this.reactRoot = createRoot(el)
-                this.editorMounted = true
-            }
-
+            this.mountElement = el
+            this.reactRoot = createRoot(el)
+            this.editorMounted = true
             this.renderPuck()
         },
 
@@ -147,6 +168,13 @@ export default function puckEditorFormComponent({
                         data={data}
                         onChange={(nextData) => {
                             if (isDisabled) {
+                                return
+                            }
+
+                            const current = JSON.stringify(this.state ?? {})
+                            const next = JSON.stringify(nextData ?? {})
+
+                            if (current === next) {
                                 return
                             }
 
