@@ -14,6 +14,7 @@ export default function puckEditorFormComponent({
     config,
     displayMode = 'inline',
     modalId,
+    mountElementId,
     isDisabled,
     stylesheetHref,
     state,
@@ -41,7 +42,7 @@ export default function puckEditorFormComponent({
             this.ensureStylesheet()
 
             if (displayMode === 'inline') {
-                this.mountEditor()
+                this.scheduleMount()
             }
 
             if (displayMode === 'slideOver' && modalId) {
@@ -50,7 +51,7 @@ export default function puckEditorFormComponent({
                         return
                     }
 
-                    this.$nextTick(() => this.mountEditor())
+                    this.scheduleMount()
                 })
             }
         },
@@ -65,7 +66,7 @@ export default function puckEditorFormComponent({
             }
 
             this.$dispatch('open-modal', { id: modalId })
-            this.$nextTick(() => this.mountEditor())
+            this.scheduleMount()
         },
 
         closeBuilder() {
@@ -91,13 +92,37 @@ export default function puckEditorFormComponent({
             document.head.appendChild(link)
         },
 
-        mountEditor() {
-            if (!this.$refs.puck) {
+        scheduleMount(attempt = 0) {
+            const mountElement = this.getMountElement()
+
+            if (mountElement) {
+                this.mountEditor(mountElement)
+
+                return
+            }
+
+            if (attempt < 30) {
+                requestAnimationFrame(() => this.scheduleMount(attempt + 1))
+            }
+        },
+
+        getMountElement() {
+            if (mountElementId) {
+                return document.getElementById(mountElementId)
+            }
+
+            return this.$refs.puck ?? null
+        },
+
+        mountEditor(mountElement) {
+            const el = mountElement ?? this.getMountElement()
+
+            if (!el) {
                 return
             }
 
             if (!this.reactRoot) {
-                this.reactRoot = createRoot(this.$refs.puck)
+                this.reactRoot = createRoot(el)
                 this.editorMounted = true
             }
 

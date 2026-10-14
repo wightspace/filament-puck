@@ -75,4 +75,9 @@ trait CanOpenInSlideOver
 
         return 'fi-puck-editor-' . $key;
     }
+
+    public function getPuckMountElementId(): string
+    {
+        return $this->getModalId() . '-canvas';
+    }
 }
