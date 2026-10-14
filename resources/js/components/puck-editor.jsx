@@ -10,6 +10,18 @@ const emptyPuckData = {
     content: [],
 }
 
+function normalizePuckData(value) {
+    if (!value || typeof value !== 'object') {
+        return structuredClone(emptyPuckData)
+    }
+
+    return {
+        root: value.root ?? { props: {} },
+        content: Array.isArray(value.content) ? value.content : [],
+        ...(value.zones ? { zones: value.zones } : {}),
+    }
+}
+
 export default function puckEditorFormComponent({
     config,
     displayMode = 'inline',
@@ -21,13 +33,21 @@ export default function puckEditorFormComponent({
 }) {
     return {
         reactRoot: null,
-        mountElement: null,
         editorMounted: false,
         isSchedulingMount: false,
+        /** Livewire entangled form state (synced on Done / close). */
         state,
+        /** Local Puck document — avoids entangle feedback loops while editing. */
+        puckData: null,
 
         get blockCount() {
-            return Array.isArray(this.state?.content) ? this.state.content.length : 0
+            const source =
+                this.puckData ??
+                (this.state && Object.keys(this.state).length > 0
+                    ? this.state
+                    : emptyPuckData)
+
+            return Array.isArray(source.content) ? source.content.length : 0
         },
 
         get summaryText() {
@@ -41,6 +61,7 @@ export default function puckEditorFormComponent({
         },
 
         init() {
+            this.puckData = normalizePuckData(this.state)
             this.ensureStylesheet()
 
             if (displayMode === 'inline') {
@@ -53,9 +74,23 @@ export default function puckEditorFormComponent({
                         return
                     }
 
-                    if (!this.editorMounted) {
-                        this.scheduleMount()
+                    window.setTimeout(() => this.scheduleMount(), 100)
+                })
+
+                window.addEventListener('close-modal', (event) => {
+                    if (event.detail?.id !== modalId) {
+                        return
                     }
+
+                    this.syncToLivewire()
+                })
+
+                window.addEventListener('puck-editor-done', (event) => {
+                    if (event.detail?.id !== modalId) {
+                        return
+                    }
+
+                    this.finishEditing()
                 })
             }
         },
@@ -63,7 +98,6 @@ export default function puckEditorFormComponent({
         destroy() {
             this.reactRoot?.unmount()
             this.reactRoot = null
-            this.mountElement = null
             this.editorMounted = false
         },
 
@@ -72,19 +106,27 @@ export default function puckEditorFormComponent({
                 return
             }
 
+            this.puckData = normalizePuckData(this.state)
             this.$dispatch('open-modal', { id: modalId })
 
-            if (!this.editorMounted) {
-                this.scheduleMount()
+            if (this.editorMounted) {
+                this.renderPuck()
+            } else {
+                window.setTimeout(() => this.scheduleMount(), 100)
             }
         },
 
-        closeBuilder() {
-            if (!modalId) {
+        finishEditing() {
+            this.syncToLivewire()
+            this.$dispatch('close-modal', { id: modalId })
+        },
+
+        syncToLivewire() {
+            if (isDisabled) {
                 return
             }
 
-            this.$dispatch('close-modal', { id: modalId })
+            this.state = structuredClone(this.puckData)
         },
 
         ensureStylesheet() {
@@ -107,26 +149,17 @@ export default function puckEditorFormComponent({
                 return
             }
 
-            if (attempt === 0) {
-                this.isSchedulingMount = true
-            }
-
             const mountElement = this.getMountElement()
 
             if (mountElement) {
-                this.isSchedulingMount = false
                 this.mountEditor(mountElement)
 
                 return
             }
 
-            if (attempt < 30) {
+            if (attempt < 40) {
                 requestAnimationFrame(() => this.scheduleMount(attempt + 1))
-
-                return
             }
-
-            this.isSchedulingMount = false
         },
 
         getMountElement() {
@@ -144,7 +177,6 @@ export default function puckEditorFormComponent({
                 return
             }
 
-            this.mountElement = el
             this.reactRoot = createRoot(el)
             this.editorMounted = true
             this.renderPuck()
@@ -156,10 +188,7 @@ export default function puckEditorFormComponent({
             }
 
             const puckConfig = config ?? defaultPuckConfig
-            const data =
-                this.state && Object.keys(this.state).length > 0
-                    ? this.state
-                    : emptyPuckData
+            const data = normalizePuckData(this.puckData)
 
             this.reactRoot.render(
                 <div className="fi-puck-editor">
@@ -171,14 +200,7 @@ export default function puckEditorFormComponent({
                                 return
                             }
 
-                            const current = JSON.stringify(this.state ?? {})
-                            const next = JSON.stringify(nextData ?? {})
-
-                            if (current === next) {
-                                return
-                            }
-
-                            this.state = nextData
+                            this.puckData = normalizePuckData(nextData)
                         }}
                         permissions={
                             isDisabled

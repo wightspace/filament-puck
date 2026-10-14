@@ -12,13 +12,14 @@
     $openButtonLabel = $field->getOpenButtonLabel();
     $modalHeading = $field->getModalHeading();
     $modalDescription = $field->getModalDescription();
-    $closeModalAlpineClickHandler = '$dispatch(' . Js::from('close-modal') . ', { id: ' . Js::from($modalId) . ' })';
+    $doneModalAlpineClickHandler = 'window.dispatchEvent(new CustomEvent(' . Js::from('puck-editor-done') . ', { detail: { id: ' . Js::from($modalId) . ' } }))';
 @endphp
 
 <div
     aria-labelledby="{{ $id }}-label"
     id="{{ $id }}"
     role="group"
+    wire:ignore
     x-load
     x-load-src="{{ FilamentAsset::getAlpineComponentSrc('puck-editor', 'wightspace/filament-puck') }}"
     x-data="puckEditorFormComponent({
@@ -55,18 +56,18 @@
             </x-filament::button>
         </div>
 
+        {{-- width must not be "screen" — Filament skips slide-over transitions for screen modals --}}
         <x-filament::modal
             :heading="$modalHeading"
             :description="filled($modalDescription) ? $modalDescription : null"
             :id="$modalId"
-            :slide-over="true"
-            width="screen"
+            slide-over
+            width="7xl"
             teleport="body"
             :close-by-clicking-away="false"
             sticky-header
         >
             <div
-                wire:ignore
                 id="{{ $puckMountElementId }}"
                 class="fi-puck-editor-canvas min-h-[calc(100vh-12rem)] w-full"
             ></div>
@@ -77,7 +78,7 @@
                         type="button"
                         color="gray"
                         size="sm"
-                        x-on:click="{!! $closeModalAlpineClickHandler !!}"
+                        x-on:click="{!! $doneModalAlpineClickHandler !!}"
                     >
                         {{ __('filament-puck::puck.actions.done') }}
                     </x-filament::button>
@@ -85,6 +86,6 @@
             </x-slot>
         </x-filament::modal>
     @else
-        <div wire:ignore id="{{ $puckMountElementId }}" class="min-h-[32rem] w-full"></div>
+        <div id="{{ $puckMountElementId }}" class="min-h-[32rem] w-full"></div>
     @endif
 </div>
