@@ -180,6 +180,7 @@ export default function puckEditorFormComponent({
                         config={config ?? defaultPuckConfig}
                         data={puckData}
                         height="100%"
+                        iframe={{ enabled: true, syncHostStyles: false }}
                         onChange={(nextData) => {
                             if (isDisabled) {
                                 return

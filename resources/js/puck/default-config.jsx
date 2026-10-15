@@ -6,6 +6,22 @@ const headingLevelStyles = {
 
 /** @type {import('@puckeditor/core').Config} */
 export const defaultPuckConfig = {
+    root: {
+        render: ({ children }) => (
+            <div
+                style={{
+                    minHeight: '100%',
+                    background: '#ffffff',
+                    color: '#0f172a',
+                    fontFamily:
+                        'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                    lineHeight: 1.5,
+                }}
+            >
+                {children}
+            </div>
+        ),
+    },
     components: {
         Heading: {
             fields: {
