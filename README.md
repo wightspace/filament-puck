@@ -70,6 +70,16 @@ PuckEditor::make('body')
     ->columnSpanFull();
 ```
 
+The slide-over spans the full viewport width by default. Use `modalWidth()` to narrow it:
+
+```php
+use Filament\Support\Enums\Width;
+
+PuckEditor::make('body')
+    ->slideOver()
+    ->modalWidth(Width::SevenExtraLarge);
+```
+
 ### Inline editor
 
 ```php

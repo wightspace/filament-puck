@@ -54,13 +54,12 @@
             </x-filament::button>
         </div>
 
-        {{-- width must not be "screen" — Filament skips slide-over transitions for screen modals --}}
         <x-filament::modal
             :heading="$modalHeading"
             :description="filled($modalDescription) ? $modalDescription : null"
             :id="$modalId"
             slide-over
-            width="7xl"
+            :width="$field->getModalWidth()"
             teleport="body"
             :close-by-clicking-away="false"
             sticky-header

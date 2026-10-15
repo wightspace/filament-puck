@@ -3,10 +3,13 @@
 namespace Wight\FilamentPuck\Forms\Components\Concerns;
 
 use Closure;
+use Filament\Support\Enums\Width;
 
 trait CanOpenInSlideOver
 {
     protected bool | Closure $isSlideOver = false;
+
+    protected Width | string | Closure | null $modalWidth = null;
 
     protected string | Closure | null $openButtonLabel = null;
 
@@ -31,6 +34,21 @@ trait CanOpenInSlideOver
     public function isSlideOver(): bool
     {
         return (bool) $this->evaluate($this->isSlideOver);
+    }
+
+    public function modalWidth(Width | string | Closure | null $width): static
+    {
+        $this->modalWidth = $width;
+
+        return $this;
+    }
+
+    /**
+     * `Width::Screen` is not recommended: Filament disables the slide-over transition for it.
+     */
+    public function getModalWidth(): Width | string
+    {
+        return $this->evaluate($this->modalWidth) ?? Width::Full;
     }
 
     public function openButtonLabel(string | Closure | null $label): static
