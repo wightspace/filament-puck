@@ -53,32 +53,3 @@
 .fi-puck-editor-canvas > .fi-puck-editor {
     height: 100%;
 }
-
-/* Puck has no dark theme; remap its tokens to Filament's gray scale. Scoped to
-   `.dark` (not `.fi-puck-editor`) so popovers Puck portals to <body> match. */
-.dark {
-    --puck-color-surface: var(--gray-900, #18181b);
-    --puck-color-surface-muted: var(--gray-800, #27272a);
-    --puck-color-surface-subtle: var(--gray-950, #09090b);
-    --puck-color-surface-inverse: var(--gray-700, #3f3f46);
-    --puck-color-border: var(--gray-700, #3f3f46);
-    --puck-color-border-hover: var(--gray-500, #71717a);
-    --puck-color-border-muted: var(--gray-800, #27272a);
-    --puck-color-border-inverse: var(--gray-500, #71717a);
-    --puck-color-text: var(--gray-50, #fafafa);
-    --puck-color-text-secondary: var(--gray-300, #d4d4d8);
-    --puck-color-text-muted: var(--gray-400, #a1a1aa);
-    --puck-color-text-subtle: var(--gray-500, #71717a);
-    --puck-color-interactive-hover: var(--puck-color-azure-05);
-    --puck-color-interactive-active: var(--puck-color-azure-06);
-    --puck-color-interactive-subtle: color-mix(in srgb, var(--puck-color-azure-05) 20%, transparent);
-    --puck-color-interactive-soft: color-mix(in srgb, var(--puck-color-azure-05) 15%, transparent);
-    --puck-color-interactive-soft-hover: color-mix(in srgb, var(--puck-color-azure-05) 25%, transparent);
-    --puck-color-interactive-neutral-hover: var(--gray-800, #27272a);
-    --puck-color-bg-disabled: var(--gray-700, #3f3f46);
-    --puck-color-text-disabled: var(--gray-500, #71717a);
-}
-
-.dark .fi-puck-editor {
-    color-scheme: dark;
-}
