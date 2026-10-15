@@ -63,6 +63,7 @@
             teleport="body"
             :close-by-clicking-away="false"
             sticky-header
+            class="fi-puck-editor-modal"
         >
             <div
                 id="{{ $puckMountElementId }}"

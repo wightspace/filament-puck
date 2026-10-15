@@ -42,8 +42,14 @@
     overflow: hidden;
 }
 
+.fi-modal.fi-puck-editor-modal > .fi-modal-window-ctn > .fi-modal-window .fi-modal-content {
+    padding-top: 0;
+    padding-inline: 0;
+}
+
 .fi-puck-editor-canvas-slide-over {
-    height: calc(100dvh - 11rem);
+    flex: 1 1 auto;
+    min-height: 24rem;
 }
 
 .fi-puck-editor-canvas-inline {
