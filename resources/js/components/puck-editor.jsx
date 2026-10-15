@@ -179,6 +179,7 @@ export default function puckEditorFormComponent({
                     <Puck
                         config={config ?? defaultPuckConfig}
                         data={puckData}
+                        height="100%"
                         onChange={(nextData) => {
                             if (isDisabled) {
                                 return
